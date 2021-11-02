@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from loadMatches import loadMatches
+from helper import plotMatches
 
 
 def computeH(x1, x2):
@@ -99,12 +100,12 @@ def computeH_ransac(locs1, locs2):
 def compositeH(H2to1, template, img):
 	#Note that the homography we compute is from the image to the template;
 	#x_template = H2to1*x_photo
-	#For warping the template to the image, we need to invert it uisng np.linalg.inv
+	#For warping the template to the image, we need to invert it using np.linalg.inv
 	inv_H2to1 = np.linalg.inv(H2to1)
 
 	#Warp template by appropriate homography
 	# you can use cv2.warpPerspective
-	# warped_template = cv2.warpPerspective(template, H2to1, (img.shape[1], img.shape[0]))
+	# warped_template = cv2.warpPerspective(template, inv_H2to1, (img.shape[1], img.shape[0]))
 	warped_template = warpingH(template, inv_H2to1, (img.shape[1], img.shape[0]))
 
 	#Use mask to combine the warped template and the image
@@ -207,4 +208,7 @@ if __name__ == "__main__":
 	result1 = result1.T
 	result1 = result1[:,0:2] / result1[:,2:3]
 	print(result1 - locs1)
+
+	plotMatches(cv_cover, cv_desk, inliers[0], inliers[1])
+
 
